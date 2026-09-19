@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account | FootyIntel AI</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  margin:0;background:#0b1220;color:white;
+  font-family:'DM Sans',Inter,sans-serif;
+  min-height:100vh;display:flex;justify-content:center;align-items:center;
+  padding:2rem 1rem;
+}
+.card{width:100%;max-width:460px;background:#111827;border:1px solid #1e293b;border-radius:24px;padding:40px}
+.logo{text-align:center;margin-bottom:28px}
+.logo-icon{font-size:36px;margin-bottom:8px}
+.logo h1{font-size:26px;font-family:'Bebas Neue',sans-serif;letter-spacing:3px;color:#1D9E75;margin-bottom:4px}
+.logo p{color:#94a3b8;font-size:13px}
+.form-group{margin-bottom:16px}
+label{display:block;margin-bottom:7px;color:#cbd5e1;font-size:13px;font-weight:600;letter-spacing:.3px}
+input,select{
+  width:100%;padding:13px 16px;border-radius:12px;
+  border:1px solid #243044;background:#161f2f;
+  color:white;font-size:14px;outline:none;font-family:inherit;transition:border .2s;
+}
+input:focus,select:focus{border-color:#1D9E75}
+input::placeholder{color:#475569}
+select option{background:#161f2f}
+.error-msg{color:#f87171;font-size:12px;margin-top:5px;display:none}
+.error-msg.show{display:block}
+.global-error{
+  display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
+  color:#f87171;font-size:13px;padding:10px 14px;border-radius:10px;margin-bottom:16px;
+}
+.global-error.show{display:block}
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.plan-opt{
+  border:1.5px solid #243044;border-radius:12px;padding:10px 6px;
+  text-align:center;cursor:pointer;transition:all .2s;background:#161f2f
+}
+.plan-opt:hover{border-color:#1D9E75}
+.plan-opt.selected{border-color:#1D9E75;background:rgba(29,158,117,.12)}
+.plan-opt .plan-name{font-weight:700;font-size:13px}
+.plan-opt .plan-price{font-size:11px;color:#94a3b8;margin-top:2px}
+.plan-opt .plan-name.free{color:#94a3b8}
+.plan-opt .plan-name.pro{color:#1D9E75}
+.plan-opt .plan-name.premium{color:#EF9F27}
+.submit-btn{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  background:#1D9E75;color:white;font-weight:700;font-size:15px;
+  cursor:pointer;margin-top:6px;font-family:inherit;transition:all .2s;
+}
+.submit-btn:hover{background:#0F6E56;transform:translateY(-1px)}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.footer-link{text-align:center;margin-top:20px;font-size:13px;color:#94a3b8}
+.footer-link a{color:#1D9E75;text-decoration:none}
+/* Success overlay */
+.success-overlay{
+  display:none;position:fixed;inset:0;background:rgba(11,18,32,.97);
+  z-index:999;justify-content:center;align-items:center;
+}
+.success-overlay.show{display:flex}
+.success-card{
+  background:#111827;border:1px solid #1e293b;border-radius:24px;
+  padding:40px;max-width:380px;width:90%;text-align:center;
+}
+.success-icon{font-size:52px;margin-bottom:16px}
+.success-card h2{font-size:22px;margin-bottom:8px}
+.success-card p{color:#94a3b8;font-size:13px;margin-bottom:24px;line-height:1.6}
+.go-btn{
+  width:100%;padding:13px;border:none;border-radius:12px;
+  background:#1D9E75;color:white;font-weight:700;font-size:15px;
+  cursor:pointer;font-family:inherit;
+}
+</style>
+</head>
+<body>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">⚽</div>
+    <h1>FootyIntel AI</h1>
+    <p>Create your account to access predictions</p>
+  </div>
+
+  <div class="global-error" id="globalError"></div>
+
+  <div class="form-group">
+    <label>Full Name</label>
+    <input type="text" id="name" placeholder="Enter your full name">
+    <div class="error-msg" id="nameError"></div>
+  </div>
+
+  <div class="form-group">
+    <label>Country</label>
+    <select id="country">
+      <option value="">Select your country</option>
+      <option>Nigeria</option><option>United Kingdom</option>
+      <option>United States</option><option>Canada</option>
+      <option>Germany</option><option>France</option>
+      <option>Spain</option><option>Italy</option>
+      <option>Brazil</option><option>Ghana</option>
+      <option>South Africa</option><option>Kenya</option>
+      <option>Australia</option><option>Netherlands</option>
+      <option>Portugal</option><option>Other</option>
+    </select>
+    <div class="error-msg" id="countryError"></div>
+  </div>
+
+  <div class="form-group">
+    <label>Email Address</label>
+    <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+    <div class="error-msg" id="emailError"></div>
+  </div>
+
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Minimum 6 characters" autocomplete="new-password">
+    <div class="error-msg" id="passwordError"></div>
+  </div>
+
+  <div class="form-group">
+    <label>Confirm Password</label>
+    <input type="password" id="confirmPassword" placeholder="Confirm password" autocomplete="new-password">
+    <div class="error-msg" id="confirmPasswordError"></div>
+  </div>
+
+  <div class="form-group">
+    <label>Choose Plan</label>
+    <div class="plan-grid">
+      <div class="plan-opt selected" data-plan="FREE" onclick="selectPlan(this)">
+        <div class="plan-name free">FREE</div>
+        <div class="plan-price">$0/mo</div>
+      </div>
+      <div class="plan-opt" data-plan="PRO" onclick="selectPlan(this)">
+        <div class="plan-name pro">PRO</div>
+        <div class="plan-price">$24/mo</div>
+      </div>
+      <div class="plan-opt" data-plan="PREMIUM" onclick="selectPlan(this)">
+        <div class="plan-name premium">PREMIUM</div>
+        <div class="plan-price">$49/mo</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="submit-btn" id="submitBtn" onclick="doSignup()">Create Account</button>
+
+  <div class="footer-link">
+    <p>Already have an account? <a href="login.html">Sign In</a></p>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <h2>Account Created!</h2>
+    <p>Welcome to FootyIntel AI. Your account is ready — you can start exploring predictions right now.</p>
+    <button class="go-btn" onclick="window.location.href='matches.html'">Go to Predictions →</button>
+  </div>
+</div>
+
+<script>
+let selectedPlan = 'FREE';
+
+function selectPlan(el) {
+  document.querySelectorAll('.plan-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPlan = el.dataset.plan;
+}
+
+function clearErrors() {
+  document.querySelectorAll('.error-msg').forEach(e => { e.classList.remove('show'); e.textContent = ''; });
+  document.getElementById('globalError').classList.remove('show');
+}
+
+function showFieldError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function showGlobalError(msg) {
+  const el = document.getElementById('globalError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function _friendlyError(code) {
+  const map = {
+    'auth/email-already-in-use': 'This email is already registered. Try signing in.',
+    'auth/invalid-email':        'Please enter a valid email address.',
+    'auth/weak-password':        'Password must be at least 6 characters.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+  };
+  return map[code] || 'Sign up failed. Please try again.';
+}
+
+async function doSignup() {
+  clearErrors();
+
+  const name            = document.getElementById('name').value.trim();
+  const country         = document.getElementById('country').value;
+  const email           = document.getElementById('email').value.trim().toLowerCase();
+  const password        = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const btn             = document.getElementById('submitBtn');
+
+  let valid = true;
+  if (!name || name.length < 2)     { showFieldError('nameError', 'Please enter your full name'); valid = false; }
+  if (!country)                      { showFieldError('countryError', 'Please select your country'); valid = false; }
+  if (!email.includes('@'))          { showFieldError('emailError', 'Please enter a valid email address'); valid = false; }
+  if (password.length < 6)           { showFieldError('passwordError', 'Password must be at least 6 characters'); valid = false; }
+  if (password !== confirmPassword)  { showFieldError('confirmPasswordError', 'Passwords do not match'); valid = false; }
+  if (!valid) return;
+
+  btn.disabled    = true;
+  btn.textContent = 'Creating account…';
+
+  try {
+    const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    await cred.user.updateProfile({ displayName: name });
+
+    // Save profile to Firestore
+    await firebase.firestore().collection('users').doc(cred.user.uid).set({
+      name,
+      email,
+      country,
+      plan: selectedPlan,
+      joined: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }),
+      joinedTs: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    document.getElementById('successOverlay').classList.add('show');
+  } catch (err) {
+    showGlobalError(_friendlyError(err.code));
+    btn.disabled    = false;
+    btn.textContent = 'Create Account';
+  }
+}
+</script>
+</body>
+</html>

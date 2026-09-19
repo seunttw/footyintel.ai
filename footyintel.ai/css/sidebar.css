@@ -1,0 +1,109 @@
+/* ============================================================
+   FootyIntel AI — Sidebar Styles
+   ============================================================ */
+
+.sidebar {
+  position: sticky;
+  top: calc(var(--nav-h) + 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: start;
+}
+
+.sidebar-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  transition: var(--transition);
+}
+.sidebar-card:hover { border-color: var(--border-md); }
+.sidebar-card.featured { border-color: var(--green-border); }
+
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* Best Pick */
+.best-pick-teams  { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.best-pick-meta   { font-size: 11px; color: var(--muted); margin-bottom: 0.75rem; }
+.best-pick-pred   { font-size: 13px; font-weight: 600; color: var(--green); margin-bottom: 0.5rem; }
+
+/* Quick Stats */
+.qs-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.qs-row:last-child { border-bottom: none; padding-bottom: 0; }
+.qs-label { color: var(--muted); }
+.qs-val   { font-weight: 600; color: var(--text); }
+
+/* AI Insight */
+.insight-text {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.insight-text strong { color: var(--green); font-weight: 600; }
+
+/* Mini confidence bar inside sidebar */
+.mini-conf-bar {
+  height: 4px;
+  background: var(--elevated);
+  border-radius: 2px;
+  overflow: hidden;
+  flex: 1;
+}
+.mini-conf-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--green);
+  transition: width 0.8s ease;
+}
+
+/* Betslip slot in sidebar */
+.betslip-empty {
+  text-align: center;
+  padding: 1.5rem 0;
+  font-size: 12px;
+  color: var(--muted2);
+}
+.betslip-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  gap: 8px;
+}
+.betslip-slot:last-of-type { border-bottom: none; }
+.betslip-slot-match { flex: 1; font-weight: 500; }
+.betslip-slot-odd   { font-weight: 700; color: var(--gold); }
+.betslip-slot-del   {
+  background: none;
+  border: none;
+  color: var(--muted2);
+  font-size: 16px;
+  line-height: 1;
+  transition: var(--transition);
+}
+.betslip-slot-del:hover { color: var(--red); }
+
+/* Responsive — hide sidebar below 900px */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+}

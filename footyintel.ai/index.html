@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FootyIntel AI — Bet Smarter</title>
+  <meta name="description" content="AI-powered football predictions across 8 leagues. Win probabilities, H2H stats, live lineups and value bets every matchday.">
+  <meta property="og:title" content="FootyIntel AI — Bet Smarter">
+  <meta property="og:description" content="AI-powered football predictions across 8 leagues. Win probabilities, H2H stats, live lineups and value bets every matchday.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+<!-- ===================== NAVBAR ===================== -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">⚽️ <span>FootyIntel</span></div>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-link active" data-page="home"     onclick="location.href='index.html'">Home</button>
+      <button class="nav-link"        data-page="dashboard" onclick="location.href='pages/matches.html'">Predictions</button>
+      <button class="nav-link"        data-page="players"   onclick="location.href='pages/player.html'">Players</button>
+      <button class="nav-link"        data-page="pricing"   onclick="location.href='pages/pricing.html'">Pricing</button>
+       <button class="nav-link"        data-page="signup"   onclick="location.href='pages/signup.html'">Signup</button>
+       <button class="nav-link"        data-page="profile"   onclick="location.href='pages/profile.html'">Profile</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-plan-badge" id="nav-plan-badge">—</span>
+      <button class="btn btn-primary btn-sm" onclick="location.href='pages/pricing.html'">Upgrade</button>
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <!-- ===================== TICKER ===================== -->
+  <div class="ticker-wrap" id="ticker-wrap"></div>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" style="padding:100px 5% 80px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(29,158,117,0.1) 0%,transparent 70%);pointer-events:none"></div>
+
+    <div class="badge badge-green" style="margin-bottom:1.5rem;font-size:12px">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block"></span>
+      AI-Powered Football Intelligence · Season 2025/26
+    </div>
+
+    <h1 class="heading-xl" style="margin-bottom:1.25rem">
+      ANALYZE SMARTER.<br>
+      <em style="color:var(--green);font-style:normal;position:relative">
+        WIN BIGGER.
+        <span style="position:absolute;bottom:-4px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:2px"></span>
+      </em>
+    </h1>
+
+    <p style="font-size:16px;color:var(--muted);max-width:560px;margin:1.25rem auto 2.5rem;line-height:1.7">
+      Our model analyses season-long attack and defence ratings, home advantage, H2H history, and expected goals (xG) to generate win probabilities — plus BTTS and over/under lines for every match.
+    </p>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:4rem">
+      <button class="btn btn-primary btn-lg" onclick="location.href='pages/matches.html'">Get Predictions →</button>
+      <button class="btn btn-outline btn-lg" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How It Works</button>
+    </div>
+
+    <!-- STATS ROW -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;max-width:640px;margin:0 auto">
+      <div style="background:var(--card);padding:2rem;text-align:center">
+        <div class="heading-lg text-green" id="acc-counter" style="line-height:1">0%</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.5px">Prediction Accuracy</div>
+      </div>
+      <div style="background:var(--card);padding:2rem;text-align:center">
+        <div class="heading-lg text-green" style="line-height:1">8</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.5px">Leagues Covered</div>
+      </div>
+      <div style="background:var(--card);padding:2rem;text-align:center">
+        <div class="heading-lg text-green" id="pred-counter" style="line-height:1">0</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.5px">Predictions Made</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LEAGUES ===================== -->
+  <section style="padding:60px 5%;text-align:center">
+    <div class="heading-md" style="margin-bottom:.5rem">Leagues &amp; Competitions</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:2rem">Covering every major European league and continental competition</p>
+    <div id="league-chips" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center"></div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section id="how" style="padding:60px 5%;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div class="section-header">
+      <div class="heading-md">How FootyIntel Works</div>
+      <p>Four layers of intelligence behind every prediction</p>
+    </div>
+    <div class="grid-4">
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-family:var(--font-head);font-size:48px;color:var(--green-dim);line-height:1;margin-bottom:.5rem">01</div>
+        <div style="font-size:28px;margin-bottom:.75rem">📊</div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:.5rem">Data Ingestion</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">Live lineups, injury reports, H2H history, home/away records, and manager tactics pulled in real-time.</div>
+      </div>
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-family:var(--font-head);font-size:48px;color:var(--green-dim);line-height:1;margin-bottom:.5rem">02</div>
+        <div style="font-size:28px;margin-bottom:.75rem">🧠</div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:.5rem">AI Analysis</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">Our model weighs season-long attack/defence ratings, home advantage, xG projections, and form to generate win, draw, and loss probabilities.</div>
+      </div>
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-family:var(--font-head);font-size:48px;color:var(--green-dim);line-height:1;margin-bottom:.5rem">03</div>
+        <div style="font-size:28px;margin-bottom:.75rem">🎯</div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:.5rem">Confidence Scoring</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">Each prediction gets a confidence score. Only high-confidence picks are flagged as "AI Picks."</div>
+      </div>
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-family:var(--font-head);font-size:48px;color:var(--green-dim);line-height:1;margin-bottom:.5rem">04</div>
+        <div style="font-size:28px;margin-bottom:.75rem">💰</div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:.5rem">Value Detection</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">We compare our probabilities to bookmaker odds to surface value bets the market has mispriced.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA BAND ===================== -->
+  <section style="padding:80px 5%;text-align:center">
+    <div class="heading-lg" style="margin-bottom:1rem">Ready to gain the edge?</div>
+    <p style="font-size:15px;color:var(--muted);margin-bottom:2rem;max-width:480px;margin-left:auto;margin-right:auto">Join 12,000+ bettors using AI intelligence to make smarter decisions every matchday.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary btn-lg" onclick="location.href='pages/pricing.html'">Start Free Trial</button>
+      <button class="btn btn-outline btn-lg" onclick="location.href='pages/matches.html'">Browse Today's Picks</button>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">⚽ FootyIntel</div>
+      <div class="footer-links">
+        <a href="pages/matches.html">Predictions</a>
+        <a href="pages/pricing.html">Pricing</a>
+        <a href="pages/login.html">Login</a>
+        <a href="pages/profile.html">Profile</a>
+      </div>
+      <div class="footer-copy">© 2026 FootyIntel AI. All rights reserved.</div>
+    </div>
+  </footer>
+  <div class="footer-disclaimer">⚠️ FootyIntel is for informational purposes only. Please gamble responsibly. 18+ only. Gambling can be addictive.</div>
+
+</div><!-- /page-wrapper -->
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="config.js"></script>
+<script src="data/mockData.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/api.js"></script>
+<script src="js/predictions.js"></script>
+<script src="script.js"></script>
+<script>
+  // Hamburger
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  // League chips
+  const chipsEl = document.getElementById('league-chips');
+  LEAGUES.filter(l => l.id !== 'all').forEach(l => {
+    const chip = document.createElement('div');
+    chip.className = 'filter-chip';
+    chip.innerHTML = `<span>${l.flag}</span> ${l.name}`;
+    chip.addEventListener('click', () => {
+      sessionStorage.setItem('fi_league', l.id);
+      location.href = 'pages/matches.html';
+    });
+    chipsEl.appendChild(chip);
+  });
+
+  // Ticker
+  const tickerEl = document.getElementById('ticker-wrap');
+  const items = [...TICKER_SCORES, ...TICKER_SCORES].map(s => `
+    <div class="ticker-item">
+      <span class="ticker-team">${s.home}</span>
+      <span class="ticker-score">${s.score}</span>
+      <span class="ticker-team">${s.away}</span>
+      ${s.status === 'LIVE'
+        ? `<span class="ticker-live">LIVE</span><span class="ticker-time">${s.time}</span>`
+        : `<span class="ticker-ft">FT</span>`}
+    </div>`).join('');
+  tickerEl.innerHTML = `<div class="ticker-track">${items}</div>`;
+
+  // Counters
+  UI.animateCounter(document.getElementById('acc-counter'), 87, '%');
+  UI.animateCounter(document.getElementById('pred-counter'), 12847, '+');
+</script>
+
+<link>
+</body>
+<script src="js/planBadge.js"></script>
+</body>
+</html>

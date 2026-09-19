@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Players — FootyIntel AI</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <link rel="stylesheet" href="../style.css"/>
+  <link rel="stylesheet" href="../css/navbar.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <style>
+    .player-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: calc(var(--nav-h) + 32px) 5% 60px;
+    }
+    .page-heading {
+      font-family: var(--font-head);
+      font-size: 28px;
+      letter-spacing: 1px;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+    .page-heading span { color: var(--green); }
+
+    /* Search */
+    .search-wrap { position: relative; margin-bottom: 10px; }
+    .search-wrap input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 52px 14px 20px;
+      border-radius: var(--radius-xl);
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-wrap input:focus { border-color: var(--green); }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute;
+      right: 18px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    /* Season selector */
+    .season-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .season-row select {
+      padding: 8px 14px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* Dropdown */
+    .results-dropdown {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .results-dropdown.show { display: block; }
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 16px;
+      cursor: pointer;
+      transition: background .15s;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-item:last-child { border-bottom: none; }
+    .result-item:hover { background: var(--elevated); }
+    .result-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--elevated);
+      flex-shrink: 0;
+    }
+    .result-name { font-weight: 600; font-size: 14px; color: var(--text); }
+    .result-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .no-results { padding: 16px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    /* Spinner */
+    .spinner {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .spinner::before {
+      content: '';
+      display: block;
+      width: 34px; height: 34px;
+      border: 3px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      margin: 0 auto 14px;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Profile card */
+    .profile-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .profile-banner {
+      height: 72px;
+      background: linear-gradient(135deg, rgba(0,200,83,.25) 0%, rgba(0,120,50,.15) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-header {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      padding: 0 22px 18px;
+      margin-top: -32px;
+    }
+    .profile-photo {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      border: 3px solid var(--card);
+      object-fit: cover;
+      background: var(--elevated);
+      flex-shrink: 0;
+    }
+    .profile-name {
+      font-family: var(--font-head);
+      font-size: 20px;
+      letter-spacing: .5px;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .profile-sub { font-size: 13px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .profile-badges { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: var(--radius-xl);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .3px;
+    }
+    .badge-pos { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+    .badge-nat { background: rgba(59,130,246,.12); color: #60a5fa; border: 1px solid rgba(59,130,246,.2); }
+    .badge-age { background: rgba(168,85,247,.12); color: #c084fc; border: 1px solid rgba(168,85,247,.2); }
+    .badge-inj { background: rgba(239,68,68,.12); color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+
+    /* Stat grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      padding: 0 22px 22px;
+    }
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-label { font-size: 10px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: .07em; }
+    .stat-sub   { font-size: 11px; color: var(--green); margin-top: 3px; }
+
+    /* Section headers */
+    .section-head {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: 0 22px;
+      margin-bottom: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+
+    /* League table */
+    .table-wrap { padding: 0 22px 22px; overflow-x: auto; }
+    table.breakdown {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table.breakdown th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.breakdown td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    table.breakdown tr:last-child td { border-bottom: none; }
+    .mini-logo { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; margin-right: 5px; }
+    .rating-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-xl);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .r-high { background: var(--green-dim); color: var(--green); }
+    .r-mid  { background: rgba(234,179,8,.15); color: #eab308; }
+    .r-low  { background: rgba(239,68,68,.15); color: #f87171; }
+
+    /* Transfers */
+    .transfers-wrap { padding: 0 22px 22px; }
+    .transfer-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .transfer-row:last-child { border-bottom: none; }
+    .tr-year { color: var(--muted); min-width: 38px; font-size: 12px; }
+    .tr-teams { flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--text); }
+    .tr-arrow { color: var(--muted); }
+    .tr-type {
+      padding: 2px 9px;
+      border-radius: var(--radius-xl);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .t-free { background: var(--green-dim); color: var(--green); }
+    .t-loan { background: rgba(59,130,246,.12); color: #60a5fa; }
+    .t-paid { background: rgba(168,85,247,.12); color: #c084fc; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 70px 20px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 52px; margin-bottom: 14px; }
+    .empty-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+
+    @media (max-width: 520px) {
+      .stat-grid { grid-template-columns: repeat(3, 1fr); }
+      .profile-name { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="location.href='../index.html'">⚽ <span>FootyIntel</span></div>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-link"        onclick="location.href='../index.html'">Home</button>
+      <button class="nav-link"        onclick="location.href='matches.html'">Predictions</button>
+      <button class="nav-link active" onclick="location.href='player.html'">Players</button>
+      <button class="nav-link"        onclick="location.href='pricing.html'">Pricing</button>
+      <button class="nav-link"        onclick="location.href='profile.html'">Profile</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-plan-badge" id="nav-plan-badge">—</span>
+      <div class="nav-avatar" title="Profile" onclick="location.href='profile.html'">⚽</div>
+      <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="player-page">
+
+  <div class="page-heading">Player <span>Search</span></div>
+
+  <!-- Search bar -->
+  <div class="search-wrap">
+    <input type="text" id="playerSearch"
+      placeholder="Search any player… e.g. Salah, Haaland, Mbappé"
+      autocomplete="off" spellcheck="false" />
+    <span class="search-icon">🔍</span>
+  </div>
+
+  <!-- Dropdown results -->
+  <div class="results-dropdown" id="resultsDropdown"></div>
+
+  <!-- Season picker — hidden until a player is chosen -->
+  <div class="season-row" id="seasonRow" style="display:none;">
+    <select id="seasonSelect">
+      <option value="2024-2025">2024–25</option>
+      <option value="2023-2024">2023–24</option>
+      <option value="2022-2023">2022–23</option>
+      <option value="2021-2022">2021–22</option>
+      <option value="2020-2021">2020–21</option>
+      <option value="2019-2020">2019–20</option>
+    </select>
+    <span style="font-size:13px;color:var(--muted);align-self:center;">Select season to reload stats</span>
+  </div>
+
+  <!-- Main content -->
+  <div id="mainContent">
+    <div class="empty-state">
+      <div class="empty-icon">👤</div>
+      <div class="empty-title">Find any player</div>
+      <div>Search by name to see stats, breakdowns &amp; transfer history</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/player.js"></script>
+<script src="../js/planBadge.js"></script>
+<script>
+  /* ── Hamburger ── */
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  const searchInput     = document.getElementById('playerSearch');
+  const resultsDropdown = document.getElementById('resultsDropdown');
+  const mainContent     = document.getElementById('mainContent');
+  const seasonRow       = document.getElementById('seasonRow');
+  const seasonSelect    = document.getElementById('seasonSelect');
+
+  let currentPlayerId = null;
+  let searchTimer     = null;
+
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    const q = searchInput.value.trim();
+    if (q.length < 3) { hideDropdown(); return; }
+    searchTimer = setTimeout(() => doSearch(q), 420);
+  });
+
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Escape') hideDropdown();
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap') && !e.target.closest('#resultsDropdown')) hideDropdown();
+  });
+
+  async function doSearch(q) {
+    resultsDropdown.innerHTML = '<div class="no-results">Searching…</div>';
+    showDropdown();
+    try {
+      const results = await PlayerAPI.searchPlayers(q);
+      if (!results || results.length === 0) {
+        resultsDropdown.innerHTML = '<div class="no-results">No players found — try a different spelling.</div>';
+        return;
+      }
+      renderDropdown(results.slice(0, 8));
+    } catch (err) {
+      resultsDropdown.innerHTML = `<div class="no-results">⚠️ ${err.message}</div>`;
+    }
+  }
+
+  function renderDropdown(players) {
+    resultsDropdown.innerHTML = players.map(p => {
+      const pl   = p.player;
+      const stat = p.statistics?.[0];
+      const club   = stat?.team?.name   || '';
+      const league = stat?.league?.name || '';
+      const pos    = stat?.games?.position || pl.position || '';
+      return `
+        <div class="result-item" data-id="${pl.id}">
+          <img class="result-avatar"
+            src="${pl.photo || ''}"
+            onerror="this.style.opacity='.3'"
+            alt="${pl.name}" />
+          <div>
+            <div class="result-name">${pl.name}</div>
+            <div class="result-meta">${[club, league, pos].filter(Boolean).join(' · ')}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    resultsDropdown.querySelectorAll('.result-item').forEach(el => {
+      el.addEventListener('click', () => {
+        searchInput.value = el.querySelector('.result-name').textContent;
+        hideDropdown();
+        loadPlayer(el.dataset.id);
+      });
+    });
+  }
+
+  function showDropdown() { resultsDropdown.classList.add('show'); }
+  function hideDropdown() { resultsDropdown.classList.remove('show'); }
+
+  async function loadPlayer(id) {
+    currentPlayerId = id;
+    seasonRow.style.display = 'flex';
+    mainContent.innerHTML = '<div class="spinner">Loading player…</div>';
+    try {
+      const season = seasonSelect.value;
+      const [statsArr, transfers] = await Promise.all([
+        PlayerAPI.getPlayerStats(id, season),
+        PlayerAPI.getPlayerTransfers(id)
+      ]);
+      if (!statsArr || statsArr.length === 0) {
+        mainContent.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">No data for this season</div>
+            <div>Try selecting a different season above.</div>
+          </div>`;
+        return;
+      }
+      renderPlayer(statsArr, transfers);
+    } catch (err) {
+      mainContent.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <div class="empty-title">Could not load player</div>
+          <div>${err.message}</div>
+        </div>`;
+    }
+  }
+
+  seasonSelect.addEventListener('change', () => {
+    if (currentPlayerId) loadPlayer(currentPlayerId);
+  });
+
+  function renderPlayer(statsArr, transfers) {
+    const p     = statsArr[0].player;
+    const stats = statsArr[0].statistics;
+
+    const tot = stats.reduce((a, s) => {
+      a.apps  += s.games?.appearences || 0;
+      a.starts+= s.games?.lineups     || 0;
+      a.goals += s.goals?.total       || 0;
+      a.assists+= s.goals?.assists    || 0;
+      a.yellow+= s.cards?.yellow      || 0;
+      a.red   += s.cards?.red         || 0;
+      a.shots += s.shots?.total       || 0;
+      a.shotsOn+= s.shots?.on         || 0;
+      a.keyPasses+= s.passes?.key     || 0;
+      a.tackles+= s.tackles?.total    || 0;
+      a.dribbles+= s.dribbles?.success|| 0;
+      const r = parseFloat(s.games?.rating || '0');
+      if (r > 0) { a.rSum += r; a.rCount++; }
+      return a;
+    }, { apps:0,starts:0,goals:0,assists:0,yellow:0,red:0,shots:0,shotsOn:0,keyPasses:0,tackles:0,dribbles:0,rSum:0,rCount:0 });
+
+    const avgRating = tot.rCount > 0 ? (tot.rSum / tot.rCount).toFixed(2) : '—';
+    const rClass = avgRating === '—' ? '' : parseFloat(avgRating) >= 7.5 ? 'r-high' : parseFloat(avgRating) >= 6.5 ? 'r-mid' : 'r-low';
+
+    const club     = stats[0]?.team?.name || '—';
+    const clubLogo = stats[0]?.team?.logo || '';
+
+    const statBoxes = [
+      { v: tot.apps,           l: 'Appearances',  s: `${tot.starts} starts` },
+      { v: tot.goals,          l: 'Goals',         s: tot.apps ? (tot.goals/tot.apps).toFixed(2)+' /game' : '' },
+      { v: tot.assists,        l: 'Assists',        s: tot.apps ? (tot.assists/tot.apps).toFixed(2)+' /game' : '' },
+      { v: tot.goals+tot.assists, l: 'G + A',       s: 'contributions' },
+      { v: tot.shots,          l: 'Shots',          s: `${tot.shotsOn} on target` },
+      { v: tot.keyPasses,      l: 'Key Passes',     s: '' },
+      { v: tot.tackles,        l: 'Tackles',        s: '' },
+      { v: tot.dribbles,       l: 'Dribbles',       s: 'successful' },
+      { v: tot.yellow,         l: 'Yellows',        s: '' },
+      { v: tot.red,            l: 'Reds',           s: '' },
+    ];
+
+    const leagueRows = stats.filter(s => (s.games?.appearences || 0) > 0).map(s => {
+      const r  = parseFloat(s.games?.rating || '0');
+      const rc = r >= 7.5 ? 'r-high' : r >= 6.5 ? 'r-mid' : 'r-low';
+      return `<tr>
+        <td><img class="mini-logo" src="${s.league?.logo||''}" onerror="this.style.display='none'" alt=""/>${s.league?.name||'—'}</td>
+        <td><img class="mini-logo" src="${s.team?.logo||''}" onerror="this.style.display='none'" alt=""/>${s.team?.name||'—'}</td>
+        <td>${s.games?.appearences||0}</td>
+        <td>${s.goals?.total||0}</td>
+        <td>${s.goals?.assists||0}</td>
+        <td>${s.shots?.on||0}/${s.shots?.total||0}</td>
+        <td>${s.passes?.key||0}</td>
+        <td>${s.cards?.yellow||0}/${s.cards?.red||0}</td>
+        <td>${r > 0 ? `<span class="rating-pill ${rc}">${r.toFixed(1)}</span>` : '—'}</td>
+      </tr>`;
+    }).join('');
+
+    const tTypeClass = t => {
+      const s = (t||'').toLowerCase();
+      return s.includes('free') ? 't-free' : s.includes('loan') ? 't-loan' : 't-paid';
+    };
+    const tRows = (transfers||[]).flatMap(t =>
+      (t.transfers||[]).map(tr => `
+        <div class="transfer-row">
+          <span class="tr-year">${tr.date?.split('-')[0]||'—'}</span>
+          <div class="tr-teams">
+            <img class="mini-logo" src="${t.teams?.out?.logo||''}" onerror="this.style.display='none'" alt=""/>
+            ${t.teams?.out?.name||'—'}
+            <span class="tr-arrow">→</span>
+            <img class="mini-logo" src="${t.teams?.in?.logo||''}" onerror="this.style.display='none'" alt=""/>
+            ${t.teams?.in?.name||'—'}
+          </div>
+          <span class="tr-type ${tTypeClass(tr.type)}">${tr.type||'—'}</span>
+        </div>`)
+    ).slice(0, 10).join('');
+
+    mainContent.innerHTML = `
+      <div class="profile-card">
+        <div class="profile-banner"></div>
+        <div class="profile-header">
+          <img class="profile-photo" src="${p.photo||''}" onerror="this.style.opacity='.3'" alt="${p.name}"/>
+          <div>
+            <div class="profile-name">${p.name}${p.injured ? ' 🚑' : ''}</div>
+            <div class="profile-sub">
+              ${clubLogo ? `<img class="mini-logo" src="${clubLogo}" onerror="this.style.display='none'" alt=""/>` : ''}
+              ${club}
+              ${p.height ? `· ${p.height}` : ''}
+              ${p.weight ? `· ${p.weight}` : ''}
+            </div>
+            <div class="profile-badges">
+              ${p.position   ? `<span class="badge badge-pos">${p.position}</span>` : ''}
+              ${p.nationality? `<span class="badge badge-nat">${p.nationality}</span>` : ''}
+              ${p.age        ? `<span class="badge badge-age">${p.age} yrs</span>` : ''}
+              ${p.injured    ? `<span class="badge badge-inj">Injured</span>` : ''}
+            </div>
+          </div>
+          <div style="margin-left:auto;text-align:center;">
+            <div class="stat-value ${rClass}" style="font-size:30px;color:var(--${avgRating!=='—'&&parseFloat(avgRating)>=7.5?'green':'text'})">${avgRating}</div>
+            <div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px;">Avg Rating</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          ${statBoxes.map(s => `
+            <div class="stat-box">
+              <div class="stat-value">${s.v}</div>
+              <div class="stat-label">${s.l}</div>
+              ${s.s ? `<div class="stat-sub">${s.s}</div>` : ''}
+            </div>`).join('')}
+        </div>
+
+        ${leagueRows ? `
+          <div class="section-head">By Competition</div>
+          <div class="table-wrap">
+            <table class="breakdown">
+              <thead><tr>
+                <th>League</th><th>Club</th><th>Apps</th>
+                <th>G</th><th>A</th><th>Shots</th>
+                <th>KP</th><th>Y/R</th><th>Rating</th>
+              </tr></thead>
+              <tbody>${leagueRows}</tbody>
+            </table>
+          </div>` : ''}
+
+        ${tRows ? `
+          <div class="section-head">Transfer History</div>
+          <div class="transfers-wrap">${tRows}</div>` : ''}
+      </div>`;
+  }
+</script>
+</body>
+</html>

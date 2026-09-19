@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile | FootyIntel AI</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../css/navbar.css">
+<style>
+.profile-page{max-width:960px;margin:0 auto;padding:2.5rem 5%}
+.profile-heading{margin-bottom:2rem}
+.profile-heading h1{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:.25rem}
+.profile-heading p{color:#888;font-size:13px}
+.profile-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  grid-auto-rows:1fr;
+  gap:1.25rem;
+  align-items:stretch;
+}
+
+@media(max-width:640px){.profile-grid{grid-template-columns:1fr;grid-auto-rows:auto}}
+
+.pcard{
+  background:#111827;
+  border:1px solid #1e293b;
+  border-radius:20px;
+  padding:24px;
+  height:100%;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+}
+.pcard-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:1.25rem;display:flex;align-items:center;gap:6px}
+
+/* Info rows */
+.info-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.info-row:last-child{border-bottom:none}
+.info-icon{width:34px;height:34px;border-radius:8px;background:rgba(29,158,117,.12);border:1px solid rgba(29,158,117,.2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px}
+.info-label{font-size:11px;color:#555;margin-bottom:2px;letter-spacing:.3px}
+.info-value{font-size:14px;font-weight:600;color:#F0F0F0}
+
+/* Plan badge */
+.plan-badge-big{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:30px;font-weight:700;font-size:14px;letter-spacing:.5px;
+  margin-bottom:1.25rem;
+}
+.plan-badge-big.FREE   {background:rgba(136,136,136,.15);border:1px solid rgba(136,136,136,.3);color:#888}
+.plan-badge-big.PRO    {background:rgba(29,158,117,.15); border:1px solid rgba(29,158,117,.3); color:#1D9E75}
+.plan-badge-big.PREMIUM{background:rgba(239,159,39,.15); border:1px solid rgba(239,159,39,.3); color:#EF9F27}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1rem}
+.stat-box{background:#161f2f;border:1px solid #1e293b;border-radius:12px;padding:14px;text-align:center}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:30px;color:#1D9E75;line-height:1}
+.stat-lbl{font-size:11px;color:#888;margin-top:2px}
+
+/* Buttons */
+.action-btn{
+  display:block;width:100%;padding:12px;border:none;border-radius:12px;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;margin-bottom:10px;text-align:center;
+}
+.btn-upgrade{background:#1D9E75;color:white}
+.btn-upgrade:hover{background:#0F6E56}
+.btn-logout{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171}
+.btn-logout:hover{background:rgba(239,68,68,.22)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="location.href='../index.html'">⚽ <span>FootyIntel</span></div>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+      <button class="nav-link" onclick="location.href='matches.html'">Predictions</button>
+      <button class="nav-link" onclick="location.href='pricing.html'">Pricing</button>
+      <button class="nav-link" onclick="location.href='player.html'">Players</button>
+      <button class="nav-link active">Profile</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-plan-badge" id="nav-plan-badge">—</span>
+      <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+<div class="profile-page">
+
+  <div class="profile-heading">
+    <h1>My Profile</h1>
+    <p>Manage your account and subscription</p>
+  </div>
+
+  <div class="profile-grid">
+
+    <!-- User Info -->
+    <div class="pcard">
+      <div class="pcard-title">👤 Account Information</div>
+      <div class="info-row">
+        <div class="info-icon">🧑</div>
+        <div><div class="info-label">FULL NAME</div><div class="info-value" id="prof-name">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">📧</div>
+        <div><div class="info-label">EMAIL</div><div class="info-value" id="prof-email">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🌍</div>
+        <div><div class="info-label">COUNTRY</div><div class="info-value" id="prof-country">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">📅</div>
+        <div>
+          <div class="info-label">JOINED</div>
+          <div class="info-value" id="prof-joined">—</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">✅</div>
+        <div>
+          <div class="info-label">VERIFICATION</div>
+          <div class="info-value" id="prof-verified">—</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🕒</div>
+        <div>
+          <div class="info-label">LAST LOGIN</div>
+          <div class="info-value" id="prof-last-login">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription -->
+    <div class="pcard">
+      <div class="pcard-title">💳 Subscription</div>
+      <div class="plan-badge-big FREE" id="plan-badge-big">FREE PLAN</div>
+      <div class="info-row">
+        <div class="info-icon">📦</div>
+        <div><div class="info-label">CURRENT PLAN</div><div class="info-value" id="prof-plan">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🗓️</div>
+        <div><div class="info-label">PLAN ACTIVATED</div><div class="info-value" id="prof-plan-date">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">⏳</div>
+        <div>
+          <div class="info-label">PLAN EXPIRES</div>
+          <div class="info-value" id="prof-plan-expiry">—</div>
+          <div id="prof-expiry-countdown" style="font-size:11px;margin-top:3px"></div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">✅</div>
+        <div><div class="info-label">STATUS</div><div class="info-value" id="prof-status" style="color:#1D9E75">Active</div></div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="pcard">
+      <div class="pcard-title">📊 Prediction Usage</div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num">48</div><div class="stat-lbl">Predictions</div></div>
+        <div class="stat-box"><div class="stat-num">78%</div><div class="stat-lbl">Accuracy</div></div>
+        <div class="stat-box"><div class="stat-num">12</div><div class="stat-lbl">Saved Picks</div></div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="pcard">
+      <div class="pcard-title">⚙️ Account Actions</div>
+      <p style="font-size:13px;color:#888;margin-bottom:1.25rem">Upgrade your plan to unlock more leagues, AI insights, and betting tools.</p>
+      <button class="action-btn btn-upgrade" onclick="location.href='pricing.html'">⬆️ Upgrade Plan</button>
+      <button class="action-btn btn-logout" onclick="logout()">🚪 Sign Out</button>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">⚽ FootyIntel</div>
+    <div class="footer-copy">© 2026 FootyIntel AI</div>
+  </div>
+</footer>
+<div class="footer-disclaimer">⚠️ FootyIntel is for informational purposes only. Please gamble responsibly. 18+ only.</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script>
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+firebase.auth().onAuthStateChanged(async firebaseUser => {
+  if (!firebaseUser) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Load Firestore profile
+  const doc = await firebase.firestore().collection('users').doc(firebaseUser.uid).get();
+  const user = doc.exists ? doc.data() : {};
+  const plan = (user.plan || 'FREE').toUpperCase();
+
+  // Populate fields
+  document.getElementById('prof-name').textContent     = user.name    || firebaseUser.displayName || '—';
+  document.getElementById('prof-email').textContent    = firebaseUser.email || '—';
+  document.getElementById('prof-country').textContent  = user.country || '—';
+  document.getElementById('prof-joined').textContent   = user.joined  || '—';
+  document.getElementById('prof-verified').textContent = firebaseUser.emailVerified ? 'Verified ✅' : 'Not Verified';
+  document.getElementById('prof-last-login').textContent = firebaseUser.metadata?.lastSignInTime
+    ? new Date(firebaseUser.metadata.lastSignInTime).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
+    : 'Just now';
+  document.getElementById('prof-plan').textContent     = plan + ' Plan';
+  document.getElementById('prof-plan-date').textContent = user.joined || '—';
+
+  // Expiry / status
+  const expiryEl    = document.getElementById('prof-plan-expiry');
+  const countdownEl = document.getElementById('prof-expiry-countdown');
+  const statusEl    = document.getElementById('prof-status');
+
+  if (plan === 'FREE') {
+    expiryEl.textContent    = 'No expiry (Free plan)';
+    expiryEl.style.color    = '#888';
+    countdownEl.textContent = '';
+    statusEl.textContent    = 'Active';
+    statusEl.style.color    = '#1D9E75';
+  } else {
+    expiryEl.textContent    = user.planExpiry || 'Active';
+    statusEl.textContent    = 'Active';
+    statusEl.style.color    = '#1D9E75';
+    countdownEl.textContent = '';
+  }
+
+  // Plan badge colour
+  const badge = document.getElementById('plan-badge-big');
+  badge.textContent = plan + ' PLAN';
+  badge.className   = 'plan-badge-big ' + plan;
+
+  // Nav badge
+  const navBadge = document.getElementById('nav-plan-badge');
+  if (navBadge) navBadge.textContent = plan;
+});
+
+async function logout() {
+  await firebase.auth().signOut();
+  window.location.href = 'login.html';
+}
+</script>
+<script src="../js/planBadge.js"></script>
+</body>
+</html>
